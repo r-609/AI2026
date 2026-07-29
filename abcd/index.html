@@ -186,8 +186,8 @@
                             <label for="safety-slider" class="text-xs text-slate-400 block mb-1">안전원칙 적용 수준 조절</label>
                             <input type="range" id="safety-slider" min="0" max="100" value="50" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-brand-500">
                             <div class="flex justify-between text-[10px] text-slate-500 mt-1">
-                                <span>무통제 (위험)</span>
                                 <span>원칙 준수 (안전)</span>
+                                <span>무통제 (위험)</span>
                             </div>
                         </div>
                     </div>
@@ -716,14 +716,14 @@
 
         slider.addEventListener('input', (e) => {
             const val = parseInt(e.target.value);
-            // 50 is balanced. < 50 tilts right (risk heavy), > 50 tilts left (safety heavy)
-            const angle = (50 - val) * 0.25; // max +-12.5 deg
+            // 50 is balanced. > 50 tilts right (risk heavy), < 50 tilts left (safety heavy)
+            const angle = (val - 50) * 0.25; // max +-12.5 deg
             scaleBeamGroup.style.transform = `rotate(${angle}deg)`;
 
-            if (val < 40) {
+            if (val > 60) {
                 scaleStatus.className = "text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30";
                 scaleStatus.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> 경고: 정보유출 및 법적 리스크 증대';
-            } else if (val > 60) {
+            } else if (val < 40) {
                 scaleStatus.className = "text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
                 scaleStatus.innerHTML = '<i class="fa-solid fa-shield-check mr-1"></i> 안전: 원칙 준수로 균형 달성';
             } else {
