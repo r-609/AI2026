@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대학 교육 지표 및 경쟁력 정량 비교 분석 시스템</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0b0f19',
+                            card: '#151c2e',
+                            cardHover: '#1c263e',
+                            cardBorder: '#232d45',
+                            accent: '#00f2fe',
+                            accentBlue: '#3b82f6',
+                            danger: '#ff4b5c',
+                            warning: '#fbbf24',
+                            success: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.2);
+        }
+        .glow-accent {
+            box-shadow: 0 0 20px -3px rgba(0, 242, 254, 0.25);
+        }
+        .glow-danger {
+            box-shadow: 0 0 20px -3px rgba(255, 75, 92, 0.25);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232d45;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-brand-bg text-slate-100 min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-black">
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 bg-brand-bg/95 backdrop-blur-md border-b border-brand-cardBorder">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white font-bold shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-compass text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-[11px] font-bold text-cyan-400 tracking-wider uppercase block">UNIVERSITY COMPASS GUIDE</span>
+                    <h1 class="text-sm sm:text-base font-bold text-white tracking-tight">Group A vs B 대학 교육 지표 정량 분석</h1>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-6 text-xs lg:text-sm font-medium text-slate-300">
+                <a href="#overview" class="hover:text-cyan-400 transition-colors py-1">핵심 개요</a>
+                <a href="#compare-tool" class="hover:text-cyan-400 transition-colors py-1 text-cyan-400 font-semibold"><i class="fa-solid fa-scale-balanced mr-1"></i>1:1 정량 비교</a>
+                <a href="#charts" class="hover:text-cyan-400 transition-colors py-1">시각화 분석</a>
+                <a href="#table-data" class="hover:text-cyan-400 transition-colors py-1">통합 데이터</a>
+                <a href="#career-advisor" class="hover:text-cyan-400 transition-colors py-1">진로 매칭</a>
+                <a href="#appendix" class="hover:text-cyan-400 transition-colors py-1">부록</a>
+            </nav>
+
+            <!-- Navigation Buttons -->
+            <div class="flex items-center space-x-2.5">
+                <a href="../index.html" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-medium border border-slate-700 transition-all">
+                    <i class="fa-solid fa-house text-xs"></i>
+                    <span>홈</span>
+                </a>
+                <a href="#compare-tool" class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs sm:text-sm shadow-md shadow-cyan-500/20 transition-all">
+                    <i class="fa-solid fa-chart-simple text-xs"></i>
+                    <span class="hidden sm:inline">1:1 비교 시작</span>
+                    <span class="sm:hidden">비교</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- Hero Summary Section -->
+        <section id="overview" class="pt-4 space-y-8">
+            <div class="text-center space-y-4">
+                <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-semibold">
+                    <i class="fa-solid fa-chart-pie text-cyan-400"></i>
+                    <span>고등교육 데이터 공시 기반 정량적 의사결정 보고서</span>
+                </div>
+                <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight max-w-4xl mx-auto">
+                    대학 브랜드의 실체, <span class="bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 bg-clip-text text-transparent">등록금 대비 자본 투여 밀도</span>로 검증됩니다
+                </h2>
+                <p class="text-xs sm:text-base text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                    서울대·연세대·고려대·KAIST·포스텍(<strong class="text-cyan-300">Group A</strong>)과 일반 대학군(<strong class="text-slate-300">Group B</strong>)의 재정 투여, 교원 밀도, 장학 자원을 정량 분석하여 진로 선택을 위한 실질적 기준을 제시합니다.
+                </p>
+            </div>
+
+            <!-- Key Metric Snapshot Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-4 glow-effect">
+                    <span class="text-[11px] font-bold text-slate-400 block">Group A 평균 교육비 환원액</span>
+                    <div class="mt-2 flex items-baseline space-x-1">
+                        <span class="text-xl sm:text-2xl font-black text-cyan-400">6,531</span>
+                        <span class="text-xs text-slate-400 font-medium">만원 / 년</span>
+                    </div>
+                    <span class="text-[10px] text-cyan-400/80 mt-1 block">Group B 대비 <strong class="text-cyan-300">6.52배</strong> 자본 투입</span>
+                </div>
+
+                <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-4">
+                    <span class="text-[11px] font-bold text-slate-400 block">Group A 전임교원 확보율</span>
+                    <div class="mt-2 flex items-baseline space-x-1">
+                        <span class="text-xl sm:text-2xl font-black text-blue-400">105.57</span>
+                        <span class="text-xs text-slate-400 font-medium">%</span>
+                    </div>
+                    <span class="text-[10px] text-blue-400/80 mt-1 block">Group B (72.48%) 대비 밀착 연구 지도</span>
+                </div>
+
+                <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-4">
+                    <span class="text-[11px] font-bold text-slate-400 block">Group A 평균 연간 장학금</span>
+                    <div class="mt-2 flex items-baseline space-x-1">
+                        <span class="text-xl sm:text-2xl font-black text-amber-400">521.1</span>
+                        <span class="text-xs text-slate-400 font-medium">만원 / 년</span>
+                    </div>
+                    <span class="text-[10px] text-amber-400/80 mt-1 block">KAIST·POSTECH 700만 원대 상회</span>
+                </div>
+
+                <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-4">
+                    <span class="text-[11px] font-bold text-slate-400 block">Group A 신입생 평균 경쟁률</span>
+                    <div class="mt-2 flex items-baseline space-x-1">
+                        <span class="text-xl sm:text-2xl font-black text-emerald-400">10.60</span>
+                        <span class="text-xs text-slate-400 font-medium">: 1</span>
+                    </div>
+                    <span class="text-[10px] text-emerald-400/80 mt-1 block">상위 10% 인적 자원 집적도</span>
+                </div>
+            </div>
+
+            <!-- Quantitative Overview Visual Card -->
+            <div class="bg-brand-card border border-brand-cardBorder rounded-2xl p-6 glow-effect relative overflow-hidden">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <!-- Left Insight -->
+                    <div class="md:w-1/2 space-y-3">
+                        <span class="px-2.5 py-1 rounded bg-blue-950 text-blue-400 text-xs font-bold border border-blue-800">
+                            <i class="fa-solid fa-scale-balanced mr-1"></i> 재정 및 투여 자본 격차 분석
+                        </span>
+                        <h3 class="text-xl font-bold text-white">등록금의 8.8배를 학생에게 돌려주는 교육 재정 구조</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Group A 대학의 연간 평균 등록금은 <strong class="text-white">740만원</strong> 수준이지만, 학생 1인당 투여되는 교육비는 평균 <strong class="text-cyan-300">7,271만원</strong>에 달합니다. 
+                            반면 Group B 대학의 평균 교육비는 1,684만원에 불과하여, 대학 진학 시 실질적으로 제공받는 연구 및 인프라의 차이가 6.5배에 이릅니다.
+                        </p>
+                    </div>
+
+                    <!-- Right Key Stat Box -->
+                    <div class="md:w-1/2 w-full bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
+                        <div class="flex justify-between items-center text-xs border-b border-slate-800 pb-2">
+                            <span class="text-slate-400 font-medium">항목별 평균 비교</span>
+                            <span class="text-cyan-400 font-bold">Group A vs Group B</span>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-slate-300">학생 1인당 교육비</span>
+                                    <span class="text-cyan-300 font-bold">7,271만원 vs 1,684만원</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2">
+                                    <div class="bg-cyan-400 h-2 rounded-full" style="width: 81%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-slate-300">전임교원 확보율</span>
+                                    <span class="text-blue-300 font-bold">105.6% vs 72.5%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 59%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-slate-300">학생 1인당 도서 수</span>
+                                    <span class="text-amber-300 font-bold">114.9권 vs 83.1권</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2">
+                                    <div class="bg-amber-400 h-2 rounded-full" style="width: 58%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive 1:1 Head-to-Head Comparison Tool -->
+        <section id="compare-tool" class="space-y-6">
+            <div class="border-b border-brand-cardBorder pb-4">
+                <span class="text-xs font-bold text-cyan-400 tracking-wider uppercase">Quantitative Comparator</span>
+                <h2 class="text-2xl font-bold text-white mt-1">1:1 맞춤 정량 지표 비교기</h2>
+                <p class="text-xs text-slate-400 mt-1">대학 및 대학군을 직접 선택하여 등록금, 교육비 환원액, 교원 밀도, 장학금을 정량 비교하세요.</p>
+            </div>
+
+            <!-- Selector Controls -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-brand-card border border-brand-cardBorder p-5 rounded-xl">
+                <!-- Target A Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-cyan-400 mb-2 uppercase">비교 대상 A 선택</label>
+                    <select id="selectTargetA" onchange="updateHeadToHead()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400">
+                        <option value="snu" selected>서울대학교 (Group A)</option>
+                        <option value="yonsei">연세대학교 (Group A)</option>
+                        <option value="korea">고려대학교 (Group A)</option>
+                        <option value="kaist">한국과학기술원 - KAIST (Group A)</option>
+                        <option value="postech">포항공과대학교 - POSTECH (Group A)</option>
+                        <option value="kentech">한국에너지공과대학교 (Group B 1위)</option>
+                        <option value="groupA_avg">Group A 5개교 평균</option>
+                        <option value="groupB_avg">Group B 일반대 평균</option>
+                    </select>
+                </div>
+
+                <!-- Target B Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-rose-400 mb-2 uppercase">비교 대상 B 선택</label>
+                    <select id="selectTargetB" onchange="updateHeadToHead()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-rose-400">
+                        <option value="snu">서울대학교 (Group A)</option>
+                        <option value="yonsei">연세대학교 (Group A)</option>
+                        <option value="korea">고려대학교 (Group A)</option>
+                        <option value="kaist">한국과학기술원 - KAIST (Group A)</option>
+                        <option value="postech">포항공과대학교 - POSTECH (Group A)</option>
+                        <option value="kentech">한국에너지공과대학교 (Group B 1위)</option>
+                        <option value="groupA_avg">Group A 5개교 평균</option>
+                        <option value="groupB_avg" selected>Group B 일반대 평균</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Side by Side Quantitative Comparison Cards -->
+            <div id="compareResultContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Target A Card -->
+                <div class="bg-brand-card border border-cyan-500/40 rounded-xl p-5 glow-accent space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <h3 id="targetAName" class="text-lg font-bold text-cyan-300">서울대학교</h3>
+                        <span id="targetAType" class="px-2 py-0.5 text-xs bg-cyan-950 text-cyan-300 border border-cyan-800 rounded font-semibold">Group A</span>
+                    </div>
+                    <div class="space-y-3 text-xs">
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">학생 1인당 교육비</span>
+                            <span id="targetAEdu" class="font-bold text-white">63,021 천원</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">평균 등록금</span>
+                            <span id="targetATuition" class="font-bold text-white">6,058 천원</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">실질 재정 환원액</span>
+                            <span id="targetAReturn" class="font-bold text-cyan-300">56,962 천원 (10.4배)</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">전임교원 확보율</span>
+                            <span id="targetAFaculty" class="font-bold text-white">123.13 %</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">1인당 연간 장학금</span>
+                            <span id="targetAScholar" class="font-bold text-white">349.9 만원</span>
+                        </div>
+                        <div class="flex justify-between py-1">
+                            <span class="text-slate-400">신입생 경쟁률 (2025)</span>
+                            <span id="targetAComp" class="font-bold text-white">7.10 : 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target B Card -->
+                <div class="bg-brand-card border border-rose-500/40 rounded-xl p-5 glow-danger space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <h3 id="targetBName" class="text-lg font-bold text-rose-300">Group B 일반대 평균</h3>
+                        <span id="targetBType" class="px-2 py-0.5 text-xs bg-rose-950 text-rose-300 border border-rose-800 rounded font-semibold">Group B</span>
+                    </div>
+                    <div class="space-y-3 text-xs">
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">학생 1인당 교육비</span>
+                            <span id="targetBEdu" class="font-bold text-white">16,842 천원</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">평균 등록금</span>
+                            <span id="targetBTuition" class="font-bold text-white">6,825 천원</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">실질 재정 환원액</span>
+                            <span id="targetBReturn" class="font-bold text-rose-300">10,016 천원 (2.5배)</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">전임교원 확보율</span>
+                            <span id="targetBFaculty" class="font-bold text-white">72.48 %</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-800/60">
+                            <span class="text-slate-400">1인당 연간 장학금</span>
+                            <span id="targetBScholar" class="font-bold text-white">418.5 만원</span>
+                        </div>
+                        <div class="flex justify-between py-1">
+                            <span class="text-slate-400">신입생 경쟁률 (2025)</span>
+                            <span id="targetBComp" class="font-bold text-white">6.78 : 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quantitative Gap Highlights Box -->
+            <div id="gapHighlightBox" class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-xs text-slate-300 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-calculator text-cyan-400 text-base"></i>
+                    <span><strong>두 대상 간 재정 환원액 격차:</strong> <span id="gapReturnValue" class="text-cyan-300 font-bold text-sm">46,945천 원</span></span>
+                </div>
+                <div id="gapAnalysisSummary" class="text-slate-400">
+                    A 대상이 B 대상보다 등록금 대비 약 <strong>4.16배</strong> 높은 환원 가치를 제공합니다.
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualization Charts Section -->
+        <section id="charts" class="space-y-6">
+            <div class="border-b border-brand-cardBorder pb-4">
+                <span class="text-xs font-bold text-cyan-400 tracking-wider uppercase">Visual Analytics</span>
+                <h2 class="text-2xl font-bold text-white mt-1">정량 지표 그래픽 시각화 분석</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Chart 1: Financial Reinvestment Bar Chart -->
+                <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-chart-column text-cyan-400"></i>
+                            <span>1인당 교육비 vs 등록금 재정 구조 (천원)</span>
+                        </h3>
+                    </div>
+                    <div class="h-64 relative">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Faculty Ratio & Scholarship Chart -->
+                <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-chart-line text-blue-400"></i>
+                            <span>전임교원 확보율(%) 및 연간 장학금(만원)</span>
+                        </h3>
+                    </div>
+                    <div class="h-64 relative">
+                        <canvas id="resourceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 3: Group A vs Group B Radar Comparison -->
+            <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-cubes text-amber-400"></i>
+                        <span>Group A 평균 vs Group B 평균 5대 인프라 종합 레이더</span>
+                    </h3>
+                </div>
+                <div class="h-72 relative flex justify-center">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comprehensive Integrated Data Table -->
+        <section id="table-data" class="space-y-6">
+            <div class="border-b border-brand-cardBorder pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-cyan-400 tracking-wider uppercase">Master Data Table</span>
+                    <h2 class="text-2xl font-bold text-white mt-1">대학별 4대 핵심 정량 지표 통합 데이터</h2>
+                    <p class="text-xs text-slate-400 mt-1">컬럼 헤더를 클릭하여 지표별 순위를 정렬하거나 필터를 통해 특정 대학군만 열람하세요.</p>
+                </div>
+
+                <!-- Filters and Table Search -->
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                        <input type="text" id="tableSearch" placeholder="대학명 검색..." onkeyup="filterTableData()" class="bg-slate-900 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-white focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <select id="groupFilter" onchange="filterTableData()" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-cyan-400">
+                        <option value="all">전체 대학보기</option>
+                        <option value="groupA">Group A (주요 5개교)</option>
+                        <option value="groupB">Group B 지표 1위/평균</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-brand-card border border-brand-cardBorder rounded-xl overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs sm:text-sm text-left text-slate-300" id="mainDataTable">
+                        <thead class="text-[11px] uppercase bg-slate-950 text-slate-400 border-b border-brand-cardBorder">
+                            <tr>
+                                <th class="px-4 py-3 cursor-pointer hover:text-cyan-400" onclick="sortTable(0)">구분 <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-4 py-3 cursor-pointer hover:text-cyan-400" onclick="sortTable(1)">대학명 <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-4 py-3 text-right cursor-pointer hover:text-cyan-400" onclick="sortTable(2)">경쟁률 (:1) <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-4 py-3 text-right cursor-pointer hover:text-cyan-400" onclick="sortTable(3)">1인당 교육비(천원) <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-4 py-3 text-right cursor-pointer hover:text-cyan-400" onclick="sortTable(4)">평균 등록금(천원) <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-4 py-3 text-right cursor-pointer hover:text-cyan-400" onclick="sortTable(5)">재정 환원액(천원) <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-4 py-3 text-right cursor-pointer hover:text-cyan-400" onclick="sortTable(6)">교원 확보율(%) <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-4 py-3 text-right cursor-pointer hover:text-cyan-400" onclick="sortTable(7)">1인당 장학금(원) <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/80" id="dataTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Strategic Career Matcher Section -->
+        <section id="career-advisor" class="bg-gradient-to-r from-brand-card to-slate-900 border border-brand-cardBorder rounded-2xl p-6 sm:p-8 space-y-6 glow-effect">
+            <div class="border-b border-slate-800 pb-4">
+                <span class="text-xs font-bold text-amber-400 tracking-wider uppercase"><i class="fa-solid fa-compass mr-1"></i> Quantitative Decision Guide</span>
+                <h2 class="text-2xl font-bold text-white mt-1">학업 가치관 기반 정량 진로 매칭 가이드</h2>
+                <p class="text-xs text-slate-400 mt-1">원하는 연구 환경, 인적 네트워크, 재정적 요구조건을 선택하여 최적의 진로 방향성을 산출합니다.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Select 1: Research vs Career -->
+                <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-xl space-y-2">
+                    <label class="block text-xs font-bold text-cyan-400 uppercase">1. 최우선 고려 학업 가치</label>
+                    <select id="advPriority" onchange="runCareerAdvisor()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+                        <option value="research">첨단 R&D 및 연구비 환원율 (교육비 5,000만원+)</option>
+                        <option value="network">검증된 동료 집단 및 대기업/공공 네트워크</option>
+                        <option value="scholarship">장학금 지원 및 무상 교육 수준의 정주 여건</option>
+                        <option value="faculty">교수진 1:1 밀착 지도 (전임교원 100%+)</option>
+                    </select>
+                </div>
+
+                <!-- Select 2: Target ROI Ratio -->
+                <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-xl space-y-2">
+                    <label class="block text-xs font-bold text-cyan-400 uppercase">2. 희망 재정 환원 배율</label>
+                    <select id="advRoi" onchange="runCareerAdvisor()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+                        <option value="high">등록금 대비 10배 이상 (이공계 특성화대)</option>
+                        <option value="mid">등록금 대비 5~8배 (주요 종합 상위대)</option>
+                        <option value="base">일반 평균 수준 (2.5배 이상)</option>
+                    </select>
+                </div>
+
+                <!-- Select 3: Target Future Career -->
+                <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-xl space-y-2">
+                    <label class="block text-xs font-bold text-cyan-400 uppercase">3. 최종 목표 커리어 트랙</label>
+                    <select id="advCareer" onchange="runCareerAdvisor()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+                        <option value="rnd">국가연구원, 글로벌 R&D, 교원/학자</option>
+                        <option value="corporate">대기업/금융권/글로벌 경영 리더십</option>
+                        <option value="public">공공 리더십, 고위 공직 및 전문직</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Decision Result Panel -->
+            <div id="advisorResultBox" class="bg-slate-900 border border-cyan-500/50 rounded-xl p-5 space-y-3">
+                <div class="flex items-center space-x-2 text-cyan-300 font-bold text-sm sm:text-base">
+                    <i class="fa-solid fa-bullseye text-cyan-400"></i>
+                    <span id="advResultTitle">추천 지표 타깃: KAIST / POSTECH (이공계 연구 중심)</span>
+                </div>
+                <p id="advResultDesc" class="text-xs text-slate-300 leading-relaxed">
+                    선택하신 기준은 최고 수준의 자본 투여 밀도(교육비 환원액 8,800만~1억 2,700만원)를 갖춘 이공계 연구 중심 대학과 가장 부합합니다. 등록금의 10~20배에 달하는 교육비 재투자와 700만원 이상의 연간 장학금으로 경제적 부담 없이 글로벌 R&D 커리어에 몰입할 수 있습니다.
+                </p>
+                <div class="pt-2 flex flex-wrap gap-2 text-[11px]">
+                    <span class="px-2.5 py-1 bg-cyan-950 border border-cyan-800 text-cyan-300 rounded font-semibold" id="advTag1">권장 1인당 교육비: 6,000만원 이상</span>
+                    <span class="px-2.5 py-1 bg-blue-950 border border-blue-800 text-blue-300 rounded font-semibold" id="advTag2">교원 확보율: 100% 내외</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Appendix: Excluded Universities Search -->
+        <section id="appendix" class="space-y-6">
+            <div class="border-b border-brand-cardBorder pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-rose-400 tracking-wider uppercase">Data Cleansing Appendix</span>
+                    <h2 class="text-2xl font-bold text-white mt-1">부록: 결측값으로 인한 분석 제외 대학 명단</h2>
+                    <p class="text-xs text-slate-400 mt-1">객관성 확보를 위해 주요 지표에 결측값('0')이 포함되어 평균 산출에서 제외된 대학 (총 52개교)</p>
+                </div>
+
+                <div class="relative min-w-[240px]">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                    <input type="text" id="univSearch" placeholder="제외 대학명 검색..." onkeyup="filterUnivs()" class="w-full bg-brand-card border border-brand-cardBorder rounded-lg pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400">
+                </div>
+            </div>
+
+            <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-6">
+                <div id="univGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 text-xs text-slate-300">
+                    <!-- Javascript will render university items dynamically -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-brand-cardBorder mt-16 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-compass text-cyan-400"></i>
+                <span class="font-semibold text-slate-400">Group A vs B 대학 교육 지표 정량 분석 웹 시스템</span>
+            </div>
+            <div>
+                <span>Source: 대학 알리미 및 최신 고등교육 공시 데이터 통계 분석</span>
+            </div>
+            <div class="flex space-x-4">
+                <a href="../index.html" class="hover:text-cyan-400 transition-colors">메인 홈으로 이동</a>
+                <a href="#overview" class="hover:text-cyan-400 transition-colors">맨 위로</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data Structure for Universities
+        const univData = {
+            snu: { name: "서울대학교", group: "Group A", groupCode: "groupA", comp: 7.10, edu: 63021.10, tuition: 6058.80, returnVal: 56962.30, faculty: 123.13, books: 181.30, scholar: 3499102.10 },
+            yonsei: { name: "연세대학교", group: "Group A", groupCode: "groupA", comp: 11.50, edu: 39659.60, tuition: 9660.10, returnVal: 29999.50, faculty: 98.75, books: 90.40, scholar: 3795230.60 },
+            korea: { name: "고려대학교", group: "Group A", groupCode: "groupA", comp: 14.70, edu: 33158.60, tuition: 8814.50, returnVal: 24344.10, faculty: 96.91, books: 109.00, scholar: 3663136.60 },
+            kaist: { name: "한국과학기술원 (KAIST)", group: "Group A", groupCode: "groupA", comp: 10.20, edu: 95024.10, tuition: 6866.00, returnVal: 88158.10, faculty: 88.23, books: 83.90, scholar: 7275048.80 },
+            postech: { name: "포항공과대학교 (POSTECH)", group: "Group A", groupCode: "groupA", comp: 9.50, edu: 132731.40, tuition: 5613.50, returnVal: 127117.90, faculty: 120.85, books: 109.70, scholar: 7823776.10 },
+            kentech: { name: "한국에너지공과대학교 (KENTECH)", group: "Group B 1위", groupCode: "groupB", comp: 0, edu: 184342.10, tuition: 9000.00, returnVal: 175342.10, faculty: 0, books: 0, scholar: 16833122.40 },
+            groupA_avg: { name: "Group A 평균", group: "Group A 평균", groupCode: "groupA", comp: 10.60, edu: 72718.96, tuition: 7402.58, returnVal: 65316.38, faculty: 105.57, books: 114.86, scholar: 5211258.84 },
+            groupB_avg: { name: "Group B 평균", group: "Group B 평균", groupCode: "groupB", comp: 6.78, edu: 16842.15, tuition: 6825.40, returnVal: 10016.75, faculty: 72.48, books: 83.12, scholar: 4185240.22 }
+        };
+
+        // Excluded Universities List
+        const excludedUnivs = [
+            "가야대학교(고령)", "가톨릭대학교(제2캠퍼스)", "가톨릭대학교(제3캠퍼스)", "감리교신학대학교", 
+            "강원관광대학교", "강원대학교(제2캠퍼스)", "강원대학교(제3캠퍼스)", "강원대학교(제4캠퍼스)", 
+            "경남과학기술대학교", "경동대학교(본교)", "경동대학교(제2캠퍼스)", "경동대학교(제3캠퍼스)", 
+            "경동대학교(제4캠퍼스)", "경북도립대학교", "경인교육대학교(제2캠퍼스)", "광양보건대학교", 
+            "광주가톨릭대학교", "국립목포대학교(담양캠퍼스)", "국립창원대학교(거창캠퍼스)", "국립창원대학교(남해캠퍼스)", 
+            "단국대학교(제2캠퍼스)", "대구미래대학교", "대구외국어대학교", "대전가톨릭대학교", 
+            "대전신학대학교", "동부산대학교", "동우대학", "명지대학교(제2캠퍼스)", "부산예술대학교", 
+            "상지영서대학교", "서남대학교(본교)", "서남대학교(제2캠퍼스)", "서라벌대학교", "서해대학", 
+            "수원과학대학교", "수원여자대학교", "신한대학교(제2캠퍼스)", "아신대학교", 
+            "안양대학교(제2캠퍼스)", "예원예술대학교(제2캠퍼스)", "웅지세무대학교", "인제대학교(제2캠퍼스)", 
+            "인천가톨릭대학교(제2캠퍼스)", "장로회신학대학교", "전남대학교(제2캠퍼스)", "제주국제대학교", 
+            "중앙대학교(제2캠퍼스)", "창신대학", "창원문성대학교", "한려대학교", "한중대학교", "홍익대학교(제2캠퍼스)"
+        ];
+
+        let tableList = Object.values(univData);
+        let sortDirection = {};
+
+        // 1. Head to Head Update Logic
+        function updateHeadToHead() {
+            const keyA = document.getElementById('selectTargetA').value;
+            const keyB = document.getElementById('selectTargetB').value;
+
+            const itemA = univData[keyA];
+            const itemB = univData[keyB];
+
+            // Render Target A
+            document.getElementById('targetAName').innerText = itemA.name;
+            document.getElementById('targetAType').innerText = itemA.group;
+            document.getElementById('targetAEdu').innerText = itemA.edu.toLocaleString('ko-KR', {maximumFractionDigits:1}) + " 천원";
+            document.getElementById('targetATuition').innerText = itemA.tuition.toLocaleString('ko-KR', {maximumFractionDigits:1}) + " 천원";
+            const ratioA = (itemA.edu / itemA.tuition).toFixed(1);
+            document.getElementById('targetAReturn').innerText = itemA.returnVal.toLocaleString('ko-KR', {maximumFractionDigits:1}) + ` 천원 (${ratioA}배)`;
+            document.getElementById('targetAFaculty').innerText = itemA.faculty > 0 ? itemA.faculty.toFixed(2) + " %" : "공시제외";
+            document.getElementById('targetAScholar').innerText = (itemA.scholar / 10000).toFixed(1) + " 만원";
+            document.getElementById('targetAComp').innerText = itemA.comp > 0 ? itemA.comp.toFixed(2) + " : 1" : "N/A";
+
+            // Render Target B
+            document.getElementById('targetBName').innerText = itemB.name;
+            document.getElementById('targetBType').innerText = itemB.group;
+            document.getElementById('targetBEdu').innerText = itemB.edu.toLocaleString('ko-KR', {maximumFractionDigits:1}) + " 천원";
+            document.getElementById('targetBTuition').innerText = itemB.tuition.toLocaleString('ko-KR', {maximumFractionDigits:1}) + " 천원";
+            const ratioB = (itemB.edu / itemB.tuition).toFixed(1);
+            document.getElementById('targetBReturn').innerText = itemB.returnVal.toLocaleString('ko-KR', {maximumFractionDigits:1}) + ` 천원 (${ratioB}배)`;
+            document.getElementById('targetBFaculty').innerText = itemB.faculty > 0 ? itemB.faculty.toFixed(2) + " %" : "공시제외";
+            document.getElementById('targetBScholar').innerText = (itemB.scholar / 10000).toFixed(1) + " 만원";
+            document.getElementById('targetBComp').innerText = itemB.comp > 0 ? itemB.comp.toFixed(2) + " : 1" : "N/A";
+
+            // Calculate Gap
+            const returnGap = Math.abs(itemA.returnVal - itemB.returnVal);
+            document.getElementById('gapReturnValue').innerText = returnGap.toLocaleString('ko-KR', {maximumFractionDigits:1}) + " 천원";
+            
+            const higherObj = itemA.returnVal >= itemB.returnVal ? itemA : itemB;
+            const lowerObj = itemA.returnVal < itemB.returnVal ? itemA : itemB;
+            const ratioDiff = (higherObj.returnVal / (lowerObj.returnVal || 1)).toFixed(2);
+
+            document.getElementById('gapAnalysisSummary').innerHTML = 
+                `<strong>${higherObj.name}</strong>이(가) ${lowerObj.name}보다 재정 환원액 기준 약 <strong>${ratioDiff}배</strong> 높은 실질 교육 투자를 제공합니다.`;
+        }
+
+        // 2. Table Data Filter and Render
+        function renderDataTable(data) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = data.map(item => {
+                const isGroupA = item.groupCode === 'groupA';
+                const rowBg = item.name.includes('평균') ? 'bg-slate-900/90 font-bold border-t-2 border-slate-700' : 'hover:bg-slate-800/50';
+                const nameColor = isGroupA ? 'text-cyan-300 font-semibold' : 'text-slate-200';
+
+                return `
+                    <tr class="${rowBg}">
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-0.5 text-[10px] rounded ${isGroupA ? 'bg-cyan-950 text-cyan-400 border border-cyan-800' : 'bg-slate-800 text-slate-400'}">${item.group}</span>
+                        </td>
+                        <td class="px-4 py-3 ${nameColor}">${item.name}</td>
+                        <td class="px-4 py-3 text-right font-medium">${item.comp > 0 ? item.comp.toFixed(2) : 'N/A'}</td>
+                        <td class="px-4 py-3 text-right font-medium">${item.edu.toLocaleString('ko-KR', {maximumFractionDigits:1})}</td>
+                        <td class="px-4 py-3 text-right text-slate-400">${item.tuition.toLocaleString('ko-KR', {maximumFractionDigits:1})}</td>
+                        <td class="px-4 py-3 text-right font-bold text-cyan-400">${item.returnVal.toLocaleString('ko-KR', {maximumFractionDigits:1})}</td>
+                        <td class="px-4 py-3 text-right font-medium">${item.faculty > 0 ? item.faculty.toFixed(2) + '%' : 'N/A'}</td>
+                        <td class="px-4 py-3 text-right font-medium">${Math.round(item.scholar).toLocaleString('ko-KR')} 원</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterTableData() {
+            const query = document.getElementById('tableSearch').value.trim().toLowerCase();
+            const group = document.getElementById('groupFilter').value;
+
+            let filtered = tableList.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(query) || item.group.toLowerCase().includes(query);
+                const matchesGroup = group === 'all' || item.groupCode === group;
+                return matchesSearch && matchesGroup;
+            });
+
+            renderDataTable(filtered);
+        }
+
+        function sortTable(colIndex) {
+            const keys = ['group', 'name', 'comp', 'edu', 'tuition', 'returnVal', 'faculty', 'scholar'];
+            const key = keys[colIndex];
+            
+            sortDirection[key] = !sortDirection[key];
+            const direction = sortDirection[key] ? 1 : -1;
+
+            tableList.sort((a, b) => {
+                if (typeof a[key] === 'string') {
+                    return a[key].localeCompare(b[key]) * direction;
+                }
+                return (a[key] - b[key]) * direction;
+            });
+
+            filterTableData();
+        }
+
+        // 3. Career Advisor Diagnostic Function
+        function runCareerAdvisor() {
+            const priority = document.getElementById('advPriority').value;
+            const roi = document.getElementById('advRoi').value;
+            const career = document.getElementById('advCareer').value;
+
+            const title = document.getElementById('advResultTitle');
+            const desc = document.getElementById('advResultDesc');
+            const tag1 = document.getElementById('advTag1');
+            const tag2 = document.getElementById('advTag2');
+
+            if (priority === 'research' || roi === 'high' || career === 'rnd') {
+                title.innerText = "추천 지표 타깃: KAIST / POSTECH (이공계 연구 중심)";
+                desc.innerText = "선택하신 학업 가치는 최고 수준의 연구비 환원율(학생 1인당 교육비 9천만~1.3억 원)과 무상에 가까운 장학금 혜택을 보장하는 이공계 특성화 대학과 가장 완벽하게 일치합니다. 첨단 연구 인프라에서 R&D, 학자, 고난도 기술 창업 커리어를 준비하세요.";
+                tag1.innerText = "교육비 환원액: 8,800만 원 이상";
+                tag2.innerText = "연간 장학금: 700만 원 이상";
+            } else if (priority === 'network' || career === 'corporate' || career === 'public') {
+                title.innerText = "추천 지표 타깃: 서울대 · 연세대 · 고려대 (종합 인적 리더십)";
+                desc.innerText = "선택하신 기준은 높여진 신입생 경쟁률(평균 11:1 이상)을 바탕으로 검증된 인적 네트워크와 법정 기준을 충족하는 전임교원 비율(100% 내외)을 갖춘 상위 종합 대학과 부합합니다. 기업 리더십 및 주요 전문직 네트워크 형성에 최적화되어 있습니다.";
+                tag1.innerText = "경쟁률: 상위 10% 밀도 (10.6:1)";
+                tag2.innerText = "교원 확보율: 105.57%";
+            } else {
+                title.innerText = "추천 지표 타깃: 실질 교육비 환원율 우수 대학군";
+                desc.innerText = "등록금 대비 실질적 교육비 투자 비율(최소 3배 이상) 및 장학금 보장 여부를 중점 점검하십시오. 브랜드 명성보다 학생 1인당 실제 제공되는 학술 도서 수 및 지도 교원 비율이 뛰어난 대학을 정량 선택하는 것을 추천합니다.";
+                tag1.innerText = "권장 등록금 대비 교육비: 3.5배 이상";
+                tag2.innerText = "도서 수: 1인당 100권 이상";
+            }
+        }
+
+        // 4. Render Excluded Universities
+        function renderUnivs(list) {
+            const grid = document.getElementById('univGrid');
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-slate-500 py-4 text-center">검색 결과가 없습니다.</div>`;
+                return;
+            }
+            grid.innerHTML = list.map(name => `
+                <div class="px-2.5 py-1.5 rounded bg-slate-900 border border-slate-800 flex items-center space-x-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500/80"></span>
+                    <span class="truncate">${name}</span>
+                </div>
+            `).join('');
+        }
+
+        function filterUnivs() {
+            const query = document.getElementById('univSearch').value.trim().toLowerCase();
+            const filtered = excludedUnivs.filter(u => u.toLowerCase().includes(query));
+            renderUnivs(filtered);
+        }
+
+        // 5. Initialize Charts
+        window.onload = function() {
+            // Render Initial Data
+            updateHeadToHead();
+            renderDataTable(tableList);
+            renderUnivs(excludedUnivs);
+
+            // Chart 1: Finance Bar Chart
+            const ctx1 = document.getElementById('financeChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['서울대', '연세대', '고려대', 'KAIST', '포스텍', 'Group A 평균', 'Group B 평균'],
+                    datasets: [
+                        {
+                            label: '학생 1인당 교육비 (천원)',
+                            data: [63021.1, 39659.6, 33158.6, 95024.1, 132731.4, 72718.96, 16842.15],
+                            backgroundColor: 'rgba(0, 242, 254, 0.75)',
+                            borderColor: '#00f2fe',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: '평균 등록금 (천원)',
+                            data: [6058.8, 9660.1, 8814.5, 6866.0, 5613.5, 7402.58, 6825.40],
+                            backgroundColor: 'rgba(255, 75, 92, 0.65)',
+                            borderColor: '#ff4b5c',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { size: 11 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#1e293b' } },
+                        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#1e293b' } }
+                    }
+                }
+            });
+
+            // Chart 2: Resource Chart
+            const ctx2 = document.getElementById('resourceChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['서울대', '연세대', '고려대', 'KAIST', '포스텍', 'Group A 평균', 'Group B 평균'],
+                    datasets: [
+                        {
+                            label: '전임교원 확보율 (%)',
+                            data: [123.13, 98.75, 96.91, 88.23, 120.85, 105.57, 72.48],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            tension: 0.3,
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '1인당 장학금 (만원)',
+                            data: [349.9, 379.5, 366.3, 727.5, 782.3, 521.1, 418.5],
+                            borderColor: '#fbbf24',
+                            backgroundColor: 'rgba(251, 191, 36, 0.2)',
+                            borderDash: [4, 4],
+                            tension: 0.3,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { size: 11 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#1e293b' } },
+                        y: { 
+                            type: 'linear', display: true, position: 'left',
+                            ticks: { color: '#3b82f6', font: { size: 10 } }, grid: { color: '#1e293b' } 
+                        },
+                        y1: { 
+                            type: 'linear', display: true, position: 'right',
+                            ticks: { color: '#fbbf24', font: { size: 10 } }, grid: { drawOnChartArea: false } 
+                        }
+                    }
+                }
+            });
+
+            // Chart 3: Radar Chart
+            const ctx3 = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx3, {
+                type: 'radar',
+                data: {
+                    labels: ['경쟁률 (상위도)', '1인당 교육비', '등록금 환원배율', '교원 확보율', '1인당 장학금'],
+                    datasets: [
+                        {
+                            label: 'Group A 평균',
+                            data: [100, 85, 88, 100, 80],
+                            borderColor: '#00f2fe',
+                            backgroundColor: 'rgba(0, 242, 254, 0.25)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Group B 평균',
+                            data: [64, 23, 25, 68, 64],
+                            borderColor: '#ff4b5c',
+                            backgroundColor: 'rgba(255, 75, 92, 0.25)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { size: 11 } } }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { color: '#1e293b' },
+                            grid: { color: '#1e293b' },
+                            pointLabels: { color: '#cbd5e1', font: { size: 11 } },
+                            ticks: { display: false, backdropColor: 'transparent' }
+                        }
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
