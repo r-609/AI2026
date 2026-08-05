@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공공데이터 앱 - JOURNEY & INSIGHT</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inter & Noto Sans KR Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#080c14',
+                            nav: '#0a0f1d',
+                            cyan: '#00a3ff',
+                            blue: '#0284c7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #080c14;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        /* Glassmorphism Navigation Bar Effect */
+        .header-glass {
+            background: rgba(10, 15, 29, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Icon Glow Effect */
+        .icon-glow {
+            box-shadow: 0 0 15px rgba(0, 163, 255, 0.5);
+        }
+        /* Button Glow Effect */
+        .btn-glow {
+            box-shadow: 0 0 20px rgba(0, 163, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 28px rgba(0, 163, 255, 0.7);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-[#080c14] text-white">
+
+    <!-- Navigation Header -->
+    <header class="header-glass sticky top-0 z-50 w-full px-4 lg:px-8 py-3 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Left Side Logo & Title Area -->
+            <div class="flex items-center space-x-3">
+                <!-- Compass Icon Badge -->
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center icon-glow">
+                    <i class="fa-solid fa-compass text-white text-lg"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-semibold tracking-widest text-blue-400 uppercase leading-none mb-0.5">
+                        JOURNEY & INSIGHT
+                    </span>
+                    <span class="text-base md:text-lg font-bold text-white tracking-tight leading-tight">
+                        공공데이터 앱
+                    </span>
+                </div>
+            </div>
+
+            <!-- Center Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+                <a href="#" class="hover:text-white transition-colors duration-200">앱 설명</a>
+                <a href="#" class="hover:text-white transition-colors duration-200">개발 과정</a>
+                <a href="#" class="hover:text-white transition-colors duration-200">앱 기능 설명</a>
+            </nav>
+
+            <!-- Right Action Buttons -->
+            <div class="flex items-center space-x-3">
+                <!-- Home Button -> Links to ../index.html/ as requested -->
+                <a href="../index.html/" 
+                   class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-slate-200 bg-slate-800/80 hover:bg-slate-700/80 rounded-full border border-slate-700/60 transition-all duration-200">
+                    <i class="fa-solid fa-house text-xs text-slate-300"></i>
+                    <span>홈</span>
+                </a>
+
+                <!-- Watch Video Primary Button -->
+                <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-sky-500 to-cyan-400 rounded-full btn-glow">
+                    <i class="fa-solid fa-circle-play text-xs"></i>
+                    <span>앱 사용</span>
+                </a>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Content Area (1번 이미지 전용 화면) -->
+    <main class="flex-1 w-full flex items-center justify-center p-3 sm:p-6 lg:p-8">
+        <div class="w-full h-full max-w-7xl flex items-center justify-center">
+            <!-- Full Width/Height Container for Image 1 (oh.png) -->
+            <div class="relative w-full h-[calc(100vh-100px)] min-h-[500px] rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/50 shadow-2xl flex items-center justify-center">
+                <img src="oh.png" 
+                     alt="우리식당 정상영업 합니다" 
+                     class="w-full h-full object-contain md:object-cover transition-opacity duration-300"
+                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1590069261209-f8e9b8642343?auto=format&fit=crop&w=1600&q=80'; this.alt='이미지 로드 실패 대체용 이미지';" />
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Smooth interactions for header menu
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>
