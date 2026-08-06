@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOURNEY & INSIGHT - 수식 너머의 의미</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles & animations */
+        body {
+            background-color: #080d1a;
+            color: #f1f5f9;
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #a5f3fc 0%, #38bdf8 40%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glow-bg {
+            background: radial-gradient(circle at 50% 20%, rgba(14, 165, 233, 0.18) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
+        }
+
+        .glass-header {
+            background: rgba(8, 13, 26, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-badge {
+            background: rgba(14, 165, 233, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+
+        /* Editing highlight */
+        .editing-active [contenteditable="true"] {
+            outline: 2px dashed rgba(56, 189, 248, 0.5);
+            outline-offset: 4px;
+            border-radius: 4px;
+            cursor: text;
+        }
+        .editing-active [contenteditable="true"]:hover {
+            outline: 2px solid rgba(56, 189, 248, 0.9);
+            background: rgba(56, 189, 248, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- Sticky Navigation Bar -->
+    <header class="sticky top-0 z-40 w-full glass-header transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Left Branding Header -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 p-[1px] flex items-center justify-center shadow-[0_0_20px_rgba(14,165,233,0.4)]">
+                    <div class="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
+                        <i class="fa-solid fa-compass text-sky-400 text-lg"></i>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span id="siteSubBrand" data-save-id="siteSubBrand" class="text-[10px] font-bold tracking-widest text-sky-400 uppercase">JOURNEY & INSIGHT</span>
+                    <span id="siteMainBrand" data-save-id="siteMainBrand" class="text-base sm:text-lg font-black text-white leading-tight">수식 너머의 의미</span>
+                </div>
+            </div>
+
+            <!-- Center Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+                <a href="#journey-section" class="hover:text-sky-400 transition-colors py-1">여정의 순간들</a>
+                <a href="#text-section" class="hover:text-sky-400 transition-colors py-1">전체 글 읽기</a>
+            </nav>
+
+            <!-- Right Action Buttons -->
+            <div class="flex items-center space-x-2.5">
+                <!-- Home Button pointing to '../index.html' -->
+                <a href="../index.html" class="flex items-center space-x-1.5 px-3.5 py-2 text-xs font-semibold text-slate-300 bg-slate-800/80 hover:bg-slate-700/80 hover:text-white rounded-xl border border-slate-700/60 transition-all shadow-sm">
+                    <i class="fa-solid fa-house text-xs"></i>
+                    <span>홈</span>
+                </a>
+
+                <!-- Edit Mode Toggle Button -->
+                <button id="editToggleBtn" onclick="toggleEditMode()" class="flex items-center space-x-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl transition-all shadow-sm">
+                    <i id="editIcon" class="fa-solid fa-pen text-sky-400 text-xs"></i>
+                    <span id="editBtnText">편집 모드 켜기</span>
+                </button>
+
+                <!-- Save Button -->
+                <button onclick="manualSaveContent()" class="flex items-center space-x-1.5 px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 rounded-xl shadow-[0_0_15px_rgba(14,165,233,0.3)] transition-all transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-floppy-disk text-xs"></i>
+                    <span>저장하기</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Ambient Glow Effect -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] glow-bg pointer-events-none -z-10"></div>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="max-w-5xl mx-auto px-4 pt-16 pb-20 text-center flex flex-col items-center justify-center">
+            
+            <!-- Hero Top Badge -->
+            <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full glass-badge text-xs md:text-sm font-medium text-sky-300 mb-8 transform hover:scale-105 transition-all">
+                <i class="fa-solid fa-shield-halved text-sky-400"></i>
+                <span id="heroBadgeText" data-save-id="heroBadgeText" contenteditable="false">
+                    거대한 수식의 바다를 탐험하는 청춘을 위한 진로 이야기
+                </span>
+            </div>
+
+            <!-- Main Headline Text -->
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.25] mb-6 max-w-4xl">
+                <span id="heroTitleLine1" data-save-id="heroTitleLine1" contenteditable="false" class="block text-white">
+                    혁신의 이면, 정답을 넘어서는
+                </span>
+                <span id="heroTitleLine2" data-save-id="heroTitleLine2" contenteditable="false" class="block text-gradient mt-1">
+                    진정한 의미를 질문합니다
+                </span>
+            </h1>
+
+            <!-- Subtitle Description Text -->
+            <p id="heroDescription" data-save-id="heroDescription" contenteditable="false" class="text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mb-10 font-normal">
+                공학은 단순히 기계를 만드는 기술일까요, 아니면 사람들의 마음을 잇는 도구일까요?<br class="hidden sm:inline">
+                성적표의 숫자에 갇혀 있던 한 소년이 수식 너머의 세상을 만나며 찾아가는 단단한 의지.
+            </p>
+
+            <!-- Hero Action Buttons -->
+            <div class="flex flex-wrap items-center justify-center gap-4">
+                <button onclick="scrollToSection('journey-section')" class="px-6 py-3.5 text-sm font-bold text-white bg-sky-500 hover:bg-sky-400 rounded-xl shadow-[0_0_20px_rgba(14,165,233,0.4)] transition-all flex items-center space-x-2 transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-compass text-xs"></i>
+                    <span id="heroBtnPrimary" data-save-id="heroBtnPrimary" contenteditable="false">여정의 순간 보기</span>
+                </button>
+
+                <button onclick="scrollToSection('text-section')" class="px-6 py-3.5 text-sm font-bold text-slate-200 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl shadow-lg transition-all flex items-center space-x-2 transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-book-open text-xs text-sky-400"></i>
+                    <span id="heroBtnSecondary" data-save-id="heroBtnSecondary" contenteditable="false">전체 글 읽기</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Journey Moments Section -->
+        <section id="journey-section" class="max-w-5xl mx-auto px-4 py-16 border-t border-slate-800/60">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
+                <div>
+                    <h2 id="journeySectionTitle" data-save-id="journeySectionTitle" contenteditable="false" class="text-2xl md:text-3xl font-bold text-white">
+                        🚀 여정의 핵심 순간들
+                    </h2>
+                    <p id="journeySectionDesc" data-save-id="journeySectionDesc" contenteditable="false" class="text-slate-400 text-sm mt-1">
+                        성장의 전환점이 되었던 중요 경험과 깨달음들입니다.
+                    </p>
+                </div>
+                <!-- Dynamic Card Adder Button -->
+                <button id="addCardBtn" onclick="addNewJourneyCard()" class="hidden px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-xl shadow-md transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>순간 카드 추가</span>
+                </button>
+            </div>
+
+            <!-- Cards Grid -->
+            <div id="journeyGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="journey-card glass-panel rounded-2xl p-6 flex flex-col justify-between hover:border-sky-500/40 transition-all group relative">
+                    <button class="card-delete-btn hidden absolute top-3 right-3 text-rose-400 hover:text-rose-300 text-xs p-1" onclick="deleteCard(this)" title="카드 삭제"><i class="fa-solid fa-trash"></i></button>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="p-2.5 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-lightbulb text-lg"></i>
+                            </span>
+                            <span contenteditable="false" class="card-date text-xs text-slate-500 font-mono">2026.03</span>
+                        </div>
+                        <h3 contenteditable="false" class="card-title text-lg font-bold text-white mb-2">질문의 시작</h3>
+                        <p contenteditable="false" class="card-body text-slate-400 text-sm leading-relaxed mb-4">
+                            시험 점수의 정답만을 쫓던 공부에서 탈피해, 원리와 현상의 근본적 원인을 탐구하기 시작한 시기.
+                        </p>
+                    </div>
+                    <span contenteditable="false" class="card-tag inline-block text-[11px] font-medium text-sky-400 bg-sky-950/60 px-2.5 py-1 rounded-md border border-sky-800/50 w-max">
+                        #호기심의_발아
+                    </span>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="journey-card glass-panel rounded-2xl p-6 flex flex-col justify-between hover:border-sky-500/40 transition-all group relative">
+                    <button class="card-delete-btn hidden absolute top-3 right-3 text-rose-400 hover:text-rose-300 text-xs p-1" onclick="deleteCard(this)" title="카드 삭제"><i class="fa-solid fa-trash"></i></button>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-code text-lg"></i>
+                            </span>
+                            <span contenteditable="false" class="card-date text-xs text-slate-500 font-mono">2026.05</span>
+                        </div>
+                        <h3 contenteditable="false" class="card-title text-lg font-bold text-white mb-2">실습과 구현</h3>
+                        <p contenteditable="false" class="card-body text-slate-400 text-sm leading-relaxed mb-4">
+                            복잡한 수식과 알고리즘을 직접 코드와 프로토타입으로 제작하며 이론이 현실이 되는 즐거움을 만끽.
+                        </p>
+                    </div>
+                    <span contenteditable="false" class="card-tag inline-block text-[11px] font-medium text-indigo-400 bg-indigo-950/60 px-2.5 py-1 rounded-md border border-indigo-800/50 w-max">
+                        #공학적_실천
+                    </span>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="journey-card glass-panel rounded-2xl p-6 flex flex-col justify-between hover:border-sky-500/40 transition-all group relative">
+                    <button class="card-delete-btn hidden absolute top-3 right-3 text-rose-400 hover:text-rose-300 text-xs p-1" onclick="deleteCard(this)" title="카드 삭제"><i class="fa-solid fa-trash"></i></button>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-heart text-lg"></i>
+                            </span>
+                            <span contenteditable="false" class="card-date text-xs text-slate-500 font-mono">2026.07</span>
+                        </div>
+                        <h3 contenteditable="false" class="card-title text-lg font-bold text-white mb-2">사람을 향한 기술</h3>
+                        <p contenteditable="false" class="card-body text-slate-400 text-sm leading-relaxed mb-4">
+                            기술의 최고 목표는 수식의 완성이 아니라, 사람들의 삶을 더욱 따뜻하고 가치있게 만드는 것임을 체득.
+                        </p>
+                    </div>
+                    <span contenteditable="false" class="card-tag inline-block text-[11px] font-medium text-purple-400 bg-purple-950/60 px-2.5 py-1 rounded-md border border-purple-800/50 w-max">
+                        #진정한_의미
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Full Text Article Section -->
+        <section id="text-section" class="max-w-4xl mx-auto px-4 py-16 border-t border-slate-800/60">
+            <div class="glass-panel rounded-3xl p-6 md:p-12 border border-slate-700/60 shadow-2xl">
+                <!-- Article Header Badge -->
+                <div class="mb-6">
+                    <span id="articleCategory" data-save-id="articleCategory" contenteditable="false" class="text-xs font-semibold tracking-wider text-sky-400 uppercase bg-sky-500/10 border border-sky-500/20 px-3 py-1 rounded-full">
+                        인사이트 에세이
+                    </span>
+                </div>
+
+                <!-- Article Title -->
+                <h2 id="articleTitle" data-save-id="articleTitle" contenteditable="false" class="text-2xl md:text-4xl font-extrabold text-white leading-snug mb-6">
+                    수식의 정답을 넘어, 세상을 바꾸는 진짜 질문을 던지다
+                </h2>
+
+                <!-- Author Meta -->
+                <div class="flex items-center space-x-4 border-b border-slate-800 pb-6 mb-8">
+                    <div class="w-10 h-10 rounded-full bg-slate-800 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-sm">
+                        탐
+                    </div>
+                    <div>
+                        <div id="articleMeta" data-save-id="articleMeta" contenteditable="false" class="text-sm font-semibold text-slate-200">
+                            에디터 탐험가 · 2026년 8월 기록
+                        </div>
+                        <div class="text-xs text-slate-500">읽는 시간 약 3분</div>
+                    </div>
+                </div>
+
+                <!-- Article Body Content -->
+                <div class="space-y-6 text-slate-300 leading-relaxed text-sm md:text-base">
+                    <p id="articleP1" data-save-id="articleP1" contenteditable="false">
+                        우리는 종종 성적표 위의 숫자와 정해진 공식의 수식에만 매달리곤 합니다. 하지만 혁신적인 기술과 가치는 단순히 주어진 정답을 도출하는 데서 나오지 않습니다. 기존의 공식에 질문을 던지고, 왜 그 수식이 존재하는지 고민할 때 비로소 진정한 의미가 드러납니다.
+                    </p>
+
+                    <blockquote class="border-l-4 border-sky-500 pl-4 py-2 italic my-6 text-sky-200 bg-sky-950/30 rounded-r-xl">
+                        <span id="articleQuote" data-save-id="articleQuote" contenteditable="false">
+                            "기술은 수식을 푸는 도구일 뿐이며, 그 도구로 무엇을 만들 것인가는 인간의 따뜻한 질문에서 시작된다."
+                        </span>
+                    </blockquote>
+
+                    <p id="articleP2" data-save-id="articleP2" contenteditable="false">
+                        공학적 사고란 단순한 기계나 코딩의 문제가 아닙니다. 사람과 사람 사이의 불편함을 해소하고, 사회의 문제를 창의적으로 해결하고자 하는 열정의 결정체입니다. 정답을 적어내는 청춘을 넘어, 스스로 의미 있는 질문을 만들어내는 탐험가가 되어야 하는 이유입니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-10 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-compass text-sky-400 text-sm"></i>
+                <span id="footerBrand" data-save-id="footerBrand" contenteditable="false" class="text-xs text-slate-400 font-medium">
+                    JOURNEY & INSIGHT — 수식 너머의 의미
+                </span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="resetDefaultContent()" class="text-xs text-slate-500 hover:text-slate-300 underline">
+                    초기 설정으로 리셋
+                </button>
+            </div>
+            <p class="text-xs text-slate-600">
+                &copy; 2026 JOURNEY & INSIGHT. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Toast Saved Message Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden transition-all transform duration-300">
+        <div class="bg-slate-900/90 border border-sky-500/50 text-white text-xs md:text-sm px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 backdrop-blur-md">
+            <i class="fa-solid fa-circle-check text-sky-400 text-base"></i>
+            <span id="toastMsg">변경사항이 저장되었습니다.</span>
+        </div>
+    </div>
+
+    <script>
+        let isEditMode = false;
+        let saveTimeout = null;
+
+        // Smooth scroll helper
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Toggle Live Editing Mode
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const body = document.body;
+            const btnText = document.getElementById('editBtnText');
+            const editIcon = document.getElementById('editIcon');
+            const addCardBtn = document.getElementById('addCardBtn');
+
+            // Select all saveable elements
+            const saveableElements = document.querySelectorAll('[data-save-id]');
+
+            if (isEditMode) {
+                body.classList.add('editing-active');
+                btnText.textContent = '편집 모드 끄기';
+                editIcon.className = 'fa-solid fa-check text-emerald-400 text-xs';
+                
+                // Enable main editable texts
+                saveableElements.forEach(el => {
+                    el.contentEditable = 'true';
+                });
+
+                // Enable Card editables & show delete buttons
+                document.querySelectorAll('.card-title, .card-body, .card-tag, .card-date').forEach(el => {
+                    el.contentEditable = 'true';
+                });
+                document.querySelectorAll('.card-delete-btn').forEach(btn => {
+                    btn.classList.remove('hidden');
+                });
+
+                if (addCardBtn) addCardBtn.classList.remove('hidden');
+
+                showToast('편집 모드가 활성화되었습니다. 글자를 클릭해 직접 수정하세요.');
+            } else {
+                body.classList.remove('editing-active');
+                btnText.textContent = '편집 모드 켜기';
+                editIcon.className = 'fa-solid fa-pen text-sky-400 text-xs';
+
+                // Disable editable text
+                saveableElements.forEach(el => {
+                    el.contentEditable = 'false';
+                });
+
+                document.querySelectorAll('.card-title, .card-body, .card-tag, .card-date').forEach(el => {
+                    el.contentEditable = 'false';
+                });
+                document.querySelectorAll('.card-delete-btn').forEach(btn => {
+                    btn.classList.add('hidden');
+                });
+
+                if (addCardBtn) addCardBtn.classList.add('hidden');
+
+                // Save when turning off edit mode
+                autoSaveContent();
+                showToast('편집 모드가 비활성화되었으며 변경사항이 저장되었습니다.');
+            }
+        }
+
+        // Toast Message Notification System
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Auto Save Content to Browser LocalStorage
+        function autoSaveContent() {
+            const savedData = {};
+
+            // Save individual elements with data-save-id
+            const saveableElements = document.querySelectorAll('[data-save-id]');
+            saveableElements.forEach(el => {
+                const key = el.getAttribute('data-save-id');
+                savedData[key] = el.innerHTML;
+            });
+
+            // Save Cards Grid Structure
+            const grid = document.getElementById('journeyGrid');
+            if (grid) {
+                savedData['journeyGridHtml'] = grid.innerHTML;
+            }
+
+            try {
+                localStorage.setItem('journey_insight_clean_v3', JSON.stringify(savedData));
+            } catch (e) {
+                console.warn('저장용량 한계 경고:', e);
+            }
+        }
+
+        // Debounced Save on User Input
+        function handleInputDebounced() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                autoSaveContent();
+            }, 1000);
+        }
+
+        // Manual Save Button Handler
+        function manualSaveContent() {
+            autoSaveContent();
+            showToast('수정한 내용이 성공적으로 브라우저에 저장되었습니다!');
+        }
+
+        // Load Saved Content from LocalStorage
+        function loadSavedContent() {
+            const savedRaw = localStorage.getItem('journey_insight_clean_v3');
+            if (!savedRaw) return;
+
+            try {
+                const savedData = JSON.parse(savedRaw);
+
+                for (const key in savedData) {
+                    if (key === 'journeyGridHtml') {
+                        const grid = document.getElementById('journeyGrid');
+                        if (grid) {
+                            grid.innerHTML = savedData[key];
+                            // Re-apply correct editability
+                            grid.querySelectorAll('.card-title, .card-body, .card-tag, .card-date').forEach(el => {
+                                el.contentEditable = isEditMode ? 'true' : 'false';
+                            });
+                            grid.querySelectorAll('.card-delete-btn').forEach(btn => {
+                                if (isEditMode) btn.classList.remove('hidden');
+                                else btn.classList.add('hidden');
+                            });
+                        }
+                    } else {
+                        const el = document.querySelector(`[data-save-id="${key}"]`);
+                        if (el) el.innerHTML = savedData[key];
+                    }
+                }
+            } catch (e) {
+                console.error('불러오기 에러:', e);
+            }
+        }
+
+        // Reset Content to Original Defaults
+        function resetDefaultContent() {
+            if (confirm('모든 편집 내용을 초기 기본 설정으로 되돌리시겠습니까?')) {
+                localStorage.removeItem('journey_insight_clean_v3');
+                location.reload();
+            }
+        }
+
+        // Dynamically Add Journey Card
+        function addNewJourneyCard() {
+            const grid = document.getElementById('journeyGrid');
+            const cardCount = grid.children.length + 1;
+            
+            const newCard = document.createElement('div');
+            newCard.className = 'journey-card glass-panel rounded-2xl p-6 flex flex-col justify-between hover:border-sky-500/40 transition-all group relative';
+            newCard.innerHTML = `
+                <button class="card-delete-btn ${isEditMode ? '' : 'hidden'} absolute top-3 right-3 text-rose-400 hover:text-rose-300 text-xs p-1" onclick="deleteCard(this)" title="카드 삭제"><i class="fa-solid fa-trash"></i></button>
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="p-2.5 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-star text-lg"></i>
+                        </span>
+                        <span contenteditable="${isEditMode ? 'true' : 'false'}" class="card-date text-xs text-slate-500 font-mono">2026.08</span>
+                    </div>
+                    <h3 contenteditable="${isEditMode ? 'true' : 'false'}" class="card-title text-lg font-bold text-white mb-2">새로운 순간 ${cardCount}</h3>
+                    <p contenteditable="${isEditMode ? 'true' : 'false'}" class="card-body text-slate-400 text-sm leading-relaxed mb-4">
+                        여기에 카드 내용이나 성장의 순간에 관한 이야기를 입력하세요.
+                    </p>
+                </div>
+                <span contenteditable="${isEditMode ? 'true' : 'false'}" class="card-tag inline-block text-[11px] font-medium text-sky-400 bg-sky-950/60 px-2.5 py-1 rounded-md border border-sky-800/50 w-max">
+                    #새로운_태그
+                </span>
+            `;
+            grid.appendChild(newCard);
+            autoSaveContent();
+            showToast('새로운 순간 카드가 추가되었습니다.');
+        }
+
+        // Delete Individual Card
+        function deleteCard(btn) {
+            const card = btn.closest('.journey-card');
+            if (card && confirm('이 카드를 삭제하시겠습니까?')) {
+                card.remove();
+                autoSaveContent();
+                showToast('카드가 삭제되었습니다.');
+            }
+        }
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedContent();
+
+            // Real-time listener for typing auto-save
+            document.addEventListener('input', (e) => {
+                if (e.target.isContentEditable) {
+                    handleInputDebounced();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
